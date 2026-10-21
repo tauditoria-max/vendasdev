@@ -527,12 +527,29 @@ function selecionarIdade(idade) {
 // SALVAR VENDA
 // ============================================================
 async function salvarVenda() {
-    const valor = document.getElementById('venda-valor').value;
-    const cupom = document.getElementById('venda-cupom').checked;
-    const pagamento = document.getElementById('venda-pagamento').value;
-    const obs = document.getElementById('venda-obs').value;
-    const troca = document.getElementById('venda-troca').checked;
-    const virada = document.getElementById('venda-virada').checked;
+    // Função auxiliar para verificar se o elemento existe
+    const getEl = (id) => document.getElementById(id);
+
+    const valorInput = getEl('venda-valor');
+    const cupomInput = getEl('venda-cupom');
+    const pagamentoInput = getEl('venda-pagamento');
+    const obsInput = getEl('venda-obs');
+    const trocaInput = getEl('venda-troca');
+    const viradaInput = getEl('venda-virada');
+
+    if (!valorInput || !pagamentoInput) {
+        alert("Erro interno: campos de valor ou pagamento não encontrados na tela. Atualize o app.");
+        return;
+    }
+
+    const valor = valorInput.value;
+    const pagamento = pagamentoInput.value;
+    
+    // Lê os checkboxes com segurança (se não existirem, assume false)
+    const cupom = cupomInput ? cupomInput.checked : false;
+    const troca = trocaInput ? trocaInput.checked : false;
+    const virada = viradaInput ? viradaInput.checked : false;
+    const obs = obsInput ? obsInput.value : "";
 
     if (!valor || !pagamento) {
         alert("Preencha o Valor e a Forma de Pagamento.");
@@ -549,7 +566,6 @@ async function salvarVenda() {
         return;
     }
 
-    // Salva a Venda normalmente
     const dadosVenda = {
         tipo: 'venda',
         loja: lojaSelecionada,
@@ -565,13 +581,16 @@ async function salvarVenda() {
         virada: virada
     };
 
-    // Se o usuário estiver na aba de vendas, não tenta alterar a aba de fluxo (que está oculta)
-    const resultado = await salvarComFila(dadosVenda);
-    
-    if (resultado.offline) alert("Venda registrada com sucesso (Offline).");
-    else alert("Venda gravada com sucesso!");
+    try {
+        const resultado = await salvarComFila(dadosVenda);
+        if (resultado.offline) alert("Venda registrada com sucesso (Offline).");
+        else alert("Venda gravada com sucesso!");
 
-    limparFormularioVenda();
+        limparFormularioVenda();
+    } catch (error) {
+        console.error("Erro ao salvar:", error);
+        alert("Erro ao salvar: " + error.message);
+    }
 }
 
 function limparFormularioVenda() {
