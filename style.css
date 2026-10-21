@@ -1,14 +1,15 @@
 :root {
-    --bg-escuro: #1e1e24;
-    --bg-card: #2a2a32;
+    --bg-escuro: #121216;
+    --bg-card: #1e1e24;
     --azul-escuro: #1f4e78;
     --azul-botao: #2f3a52;
-    --azul-ativo: #4a6b9a;
-    --texto-claro: #e0e0e0;
-    --texto-cinza: #8a8a93;
+    --azul-ativo: #3b82f6;
+    --texto-claro: #f3f4f6;
+    --texto-cinza: #9ca3af;
     --branco: #ffffff;
-    --borda: #3a3a42;
-    --vermelho: #d9534f;
+    --borda: #2d2d37;
+    --vermelho: #ef4444;
+    --verde: #22c55e;
 }
 
 * {
@@ -17,6 +18,11 @@
     padding: 0;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    height: 100%;
+    height: 100dvh;
 }
 
 body {
@@ -29,146 +35,534 @@ body {
     flex-direction: column;
 }
 
-.tela { display: none; height: 100%; flex-direction: column; overflow: hidden; }
+.tela { display: none; height: 100%; flex-direction: column; overflow: hidden; width: 100%; }
 .tela.ativa { display: flex; }
 
-/* HEADER */
+/* ==========================================
+   TELA DE LOGIN (Totalmente Centralizada)
+========================================== */
+#tela-login { 
+    justify-content: center; 
+    align-items: center; 
+    background: radial-gradient(circle at top, #1e1e24, #121216);
+    padding: 20px;
+}
+
+.login-container { 
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-container h1 { 
+    color: var(--branco); 
+    margin-bottom: 5px; 
+    font-size: 2.2rem; 
+    font-weight: 800; 
+    letter-spacing: -1px;
+}
+
+.subtitulo { 
+    color: var(--texto-cinza); 
+    margin-bottom: 35px; 
+    font-size: 1.1rem; 
+}
+
+.login-container input { 
+    width: 100%; 
+    padding: 16px; 
+    margin-bottom: 15px; 
+    border-radius: 12px; 
+    border: 1px solid var(--borda); 
+    background: var(--bg-card); 
+    color: var(--branco); 
+    font-size: 1rem; 
+    transition: 0.3s;
+}
+
+.login-container input:focus { 
+    outline: none; 
+    border-color: var(--azul-ativo); 
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); 
+}
+
+.btn-primario { 
+    width: 100%; 
+    padding: 16px; 
+    background-color: var(--azul-ativo); 
+    color: var(--branco); 
+    border: none; 
+    border-radius: 12px; 
+    font-size: 1.1rem; 
+    font-weight: bold; 
+    cursor: pointer;
+    transition: 0.2s; 
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primario:active { 
+    transform: scale(0.98); 
+    background-color: #2563eb; 
+}
+
+.erro { 
+    color: var(--vermelho); 
+    margin-top: 10px; 
+    font-size: 0.9rem; 
+}
+
+/* ==========================================
+   TOP BAR (Cabeçalho)
+========================================== */
 .top-bar {
-    background-color: var(--azul-escuro);
+    background-color: var(--bg-card);
     color: var(--branco);
-    padding: 15px;
+    padding: 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    border-bottom: 1px solid var(--borda);
 }
-.header-info span { font-weight: bold; font-size: 1.1rem; display: block; }
-.header-info small { font-size: 0.8rem; opacity: 0.8; }
 
-/* FORMULÁRIOS (Estilo Blocos) */
-.conteudo-aba {
-    display: none;
-    flex: 1;
-    overflow-y: auto;
-    background-color: var(--bg-escuro);
+.header-info span { 
+    font-weight: bold; 
+    font-size: 1.1rem; 
+    display: block; 
 }
+
+.header-info small { 
+    font-size: 0.8rem; 
+    color: var(--texto-cinza); 
+}
+
+.btn-icon { 
+    background: var(--bg-escuro); 
+    border: 1px solid var(--borda); 
+    color: var(--texto-claro); 
+    padding: 8px 12px; 
+    border-radius: 8px; 
+    font-size: 1.1rem; 
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-icon:active { background: var(--bg-card); }
+
+.btn-voltar { 
+    background: transparent; 
+    border: 1px solid var(--borda); 
+    color: var(--texto-claro); 
+    padding: 8px 12px; 
+    border-radius: 8px; 
+    font-size: 0.8rem; 
+}
+
+/* ==========================================
+   TELA DE LOJAS E RESUMO
+========================================== */
+.grid-lojas { 
+    padding: 15px; 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 12px; 
+    overflow-y: auto; 
+}
+
+.card-loja { 
+    background: var(--bg-card); 
+    padding: 20px 10px; 
+    text-align: center; 
+    border-radius: 12px; 
+    color: var(--texto-claro); 
+    font-weight: 600; 
+    font-size: 0.95rem;
+    border: 1px solid var(--borda); 
+    cursor: pointer; 
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+}
+
+.card-loja:active { 
+    background: var(--azul-botao); 
+    transform: scale(0.97); 
+}
+
+.bloco-resumo {
+    background-color: var(--bg-card);
+    margin: 0 15px 15px 15px;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--borda);
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+.resumo-titulo { 
+    font-size: 1rem; 
+    font-weight: bold; 
+    color: var(--azul-ativo); 
+    margin-bottom: 12px; 
+}
+
+.resumo-linha { 
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 0.9rem; 
+    margin-bottom: 8px; 
+    color: var(--texto-cinza); 
+}
+
+.resumo-valor { 
+    color: var(--texto-claro); 
+    font-weight: bold; 
+}
+
+/* ==========================================
+   ABAS E FORMULÁRIOS
+========================================== */
+.abas { 
+    display: flex; 
+    background: var(--bg-card); 
+    border-bottom: 1px solid var(--borda); 
+}
+
+.aba { 
+    flex: 1; 
+    padding: 16px 0; 
+    background: none; 
+    border: none; 
+    color: var(--texto-cinza); 
+    font-weight: bold; 
+    font-size: 0.9rem; 
+    cursor: pointer; 
+    border-bottom: 3px solid transparent; 
+    transition: 0.2s;
+}
+
+.aba.ativa { 
+    color: var(--azul-ativo); 
+    border-bottom-color: var(--azul-ativo); 
+    background: rgba(59, 130, 246, 0.05); 
+}
+
+.conteudo-aba { 
+    display: none; 
+    flex: 1; 
+    overflow-y: auto; 
+    background-color: var(--bg-escuro); 
+    padding-bottom: 90px; /* Espaço para o botão fixo no fundo */
+}
+
 .conteudo-aba.ativa { display: block; }
 
-.bloco-form {
-    background-color: var(--bg-card);
-    padding: 15px 20px;
-    border-bottom: 1px solid var(--borda);
-    margin-bottom: 10px;
+.bloco-form { 
+    background-color: var(--bg-card); 
+    padding: 16px 20px; 
+    border-bottom: 1px solid var(--borda); 
+    margin-bottom: 10px; 
 }
 
-.bloco-form label {
-    display: block;
-    font-weight: bold;
-    color: var(--texto-claro);
-    margin-bottom: 15px;
-    font-size: 0.95rem;
+.bloco-form label { 
+    display: block; 
+    font-weight: 600; 
+    color: var(--texto-cinza); 
+    margin-bottom: 12px; 
+    font-size: 0.9rem; 
 }
 
-/* INPUTS E SELECTS */
-.input-escuro {
-    width: 100%;
-    background: transparent;
-    border: none;
-    color: var(--branco);
-    font-size: 1.2rem;
-    outline: none;
+.input-escuro { 
+    width: 100%; 
+    background: transparent; 
+    border: none; 
+    color: var(--branco); 
+    font-size: 1.2rem; 
+    outline: none; 
 }
 
-/* SWITCH (Toggle) */
-.switch { position: relative; display: inline-block; width: 50px; height: 26px; float: right; }
+.input-destaque { 
+    font-size: 1.8rem; 
+    font-weight: bold; 
+    color: var(--azul-ativo); 
+}
+
+/* ==========================================
+   SWITCH CUPOM FISCAL
+========================================== */
+.switch-container { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+.switch-container label { 
+    margin: 0; 
+    font-size: 1rem; 
+    color: var(--texto-claro); 
+}
+
+.switch { 
+    position: relative; 
+    display: inline-block; 
+    width: 54px; 
+    height: 30px; 
+}
+
 .switch input { opacity: 0; width: 0; height: 0; }
-.slider {
-    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: var(--borda); transition: .4s; border-radius: 34px;
+
+.slider { 
+    position: absolute; 
+    cursor: pointer; 
+    top: 0; left: 0; right: 0; bottom: 0; 
+    background-color: var(--borda); 
+    transition: .4s; 
+    border-radius: 34px; 
 }
-.slider:before {
-    position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
-    background-color: white; transition: .4s; border-radius: 50%;
+
+.slider:before { 
+    position: absolute; 
+    content: ""; 
+    height: 22px; 
+    width: 22px; 
+    left: 4px; 
+    bottom: 4px; 
+    background-color: white; 
+    transition: .4s; 
+    border-radius: 50%; 
 }
+
 input:checked + .slider { background-color: var(--azul-ativo); }
 input:checked + .slider:before { transform: translateX(24px); }
 
-/* CONTADOR (+ / -) PARA FLUXO */
-.fluxo-linha-controle {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-.fluxo-linha-controle:last-child { margin-bottom: 0; }
-.fluxo-label { font-size: 1rem; color: var(--texto-claro); }
-.fluxo-controles { display: flex; align-items: center; gap: 15px; }
-
-.btn-redondo {
-    width: 44px; height: 44px; border-radius: 50%;
-    background-color: var(--azul-botao); color: var(--branco);
-    border: none; font-size: 1.5rem; font-weight: bold; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-}
-.btn-redondo:active { background-color: var(--azul-ativo); }
-.valor-contador { font-size: 1.3rem; font-weight: bold; color: var(--branco); min-width: 20px; text-align: center; }
-
-/* BOTÕES DE SELEÇÃO (Gênero e Idade) */
-.grid-botoes { display: flex; flex-wrap: wrap; gap: 10px; }
-.btn-selecao {
-    flex: 1; padding: 12px; border-radius: 25px;
-    background-color: var(--azul-botao); color: var(--branco);
-    border: none; font-size: 0.95rem; font-weight: bold;
-    text-align: center; cursor: pointer; transition: 0.2s;
-    min-width: 45%;
-}
-.btn-selecao.selecionado {
-    background-color: var(--azul-ativo);
-    box-shadow: 0 0 8px rgba(74, 107, 154, 0.5);
-    border: 1px solid #6f92c4;
+/* ==========================================
+   CONTADORES (+ e -)
+========================================== */
+.fluxo-linha-controle { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 15px; 
 }
 
-/* BOTÃO SALVAR FIXO */
-.barra-salvar {
-    background-color: var(--borda);
-    padding: 15px;
-    text-align: center;
-    position: sticky;
-    bottom: 0;
-    z-index: 10;
-}
-.btn-salvar {
-    width: 100%; padding: 16px; border-radius: 8px;
-    background-color: var(--azul-ativo); color: var(--branco);
-    border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer;
-    text-transform: uppercase; letter-spacing: 1px;
+.fluxo-label { 
+    font-size: 1rem; 
+    font-weight: 600; 
+    color: var(--texto-claro); 
 }
 
-/* NAVEGAÇÃO ABAS */
-.abas { display: flex; background: var(--azul-escuro); }
-.aba {
-    flex: 1; padding: 15px 0; background: none; border: none;
-    color: var(--texto-cinza); font-weight: bold; font-size: 0.9rem; cursor: pointer;
-    border-bottom: 3px solid transparent;
+.fluxo-controles { 
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
 }
-.aba.ativa { color: var(--branco); border-bottom-color: var(--azul-ativo); }
 
-/* MANTIDOS DO SISTEMA ANTERIOR */
-.grid-lojas { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; overflow-y: auto; }
-.card-loja { background: var(--bg-card); padding: 20px; text-align: center; border-radius: 8px; color: var(--branco); font-weight: bold; border: 1px solid var(--borda); }
-.card-loja:active { background: var(--azul-ativo); }
+.btn-redondo { 
+    width: 46px; 
+    height: 46px; 
+    border-radius: 50%; 
+    background-color: var(--bg-escuro); 
+    border: 1px solid var(--borda); 
+    color: var(--branco); 
+    font-size: 1.4rem; 
+    font-weight: bold; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    transition: 0.1s;
+}
 
-.btn-sair, .btn-voltar { background: transparent; border: 1px solid var(--branco); color: var(--branco); padding: 8px 12px; border-radius: 5px; font-size: 0.8rem; }
+.btn-redondo:active { 
+    background-color: var(--azul-botao); 
+    transform: scale(0.9); 
+}
 
-#tela-login { justify-content: center; align-items: center; }
-.login-container { width: 85%; max-width: 400px; text-align: center; }
-.login-container h1 { color: var(--branco); margin-bottom: 5px; }
-.login-container input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--borda); background: var(--bg-card); color: var(--branco); font-size: 1rem; }
-.btn-primario { width: 100%; padding: 15px; background-color: var(--azul-ativo); color: var(--branco); border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; }
+.valor-contador { 
+    font-size: 1.4rem; 
+    font-weight: bold; 
+    color: var(--branco); 
+    min-width: 30px; 
+    text-align: center; 
+}
 
-/* Modal */
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; }
+/* ==========================================
+   BOTÕES DE SELEÇÃO (GÊNERO E IDADE)
+========================================== */
+.grid-botoes { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 10px; 
+}
+
+.btn-selecao { 
+    flex: 1; 
+    padding: 14px; 
+    border-radius: 12px; 
+    background-color: var(--bg-escuro); 
+    border: 1px solid var(--borda); 
+    color: var(--texto-claro); 
+    font-size: 0.95rem; 
+    font-weight: bold; 
+    text-align: center; 
+    cursor: pointer; 
+    min-width: 45%; 
+    transition: 0.2s;
+}
+
+.btn-selecao.selecionado { 
+    background-color: var(--azul-ativo); 
+    border-color: var(--azul-ativo); 
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); 
+}
+
+/* ==========================================
+   BOTÕES SECUNDÁRIOS E DE SALVAR
+========================================== */
+.btn-secundario { 
+    display: block; 
+    width: 90%; 
+    margin: 15px auto; 
+    padding: 14px; 
+    background: transparent; 
+    border: 1px solid var(--borda); 
+    color: var(--texto-claro); 
+    border-radius: 12px; 
+    font-weight: bold; 
+    cursor: pointer;
+}
+
+.btn-secundario:active { background: var(--bg-card); }
+
+.barra-salvar { 
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%; 
+    background: rgba(30, 30, 36, 0.95); 
+    backdrop-filter: blur(10px); 
+    padding: 15px; 
+    border-top: 1px solid var(--borda); 
+    z-index: 10; 
+}
+
+.btn-salvar { 
+    width: 100%; 
+    padding: 16px; 
+    border-radius: 12px; 
+    background-color: var(--azul-ativo); 
+    color: var(--branco); 
+    border: none; 
+    font-size: 1.1rem; 
+    font-weight: bold; 
+    cursor: pointer; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); 
+}
+
+.btn-salvar:active { transform: scale(0.98); }
+
+/* ==========================================
+   MODAL DE ÚLTIMOS REGISTROS
+========================================== */
+.modal { 
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.8); 
+    backdrop-filter: blur(4px); 
+    z-index: 100; 
+    justify-content: center; 
+    align-items: center; 
+}
+
 .modal.ativa { display: flex; }
-.modal-content { background: var(--bg-card); width: 90%; max-height: 80%; border-radius: 10px; padding: 20px; overflow-y: auto; position: relative; color: var(--texto-claro); }
-.fechar-modal { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; color: var(--vermelho); cursor: pointer; }
-.item-registro { display: flex; justify-content: space-between; border-bottom: 1px solid var(--borda); padding: 10px 0; }
+
+.modal-content { 
+    background: var(--bg-card); 
+    width: 90%; 
+    max-height: 80%; 
+    border-radius: 16px; 
+    padding: 20px; 
+    overflow-y: auto; 
+    position: relative; 
+    color: var(--texto-claro); 
+    border: 1px solid var(--borda); 
+}
+
+.fechar-modal { 
+    position: absolute; 
+    top: 15px; right: 20px; 
+    font-size: 1.8rem; 
+    color: var(--texto-cinza); 
+    cursor: pointer; 
+}
+
+.item-registro { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 1px solid var(--borda); 
+    padding: 12px 0; 
+}
+
+.item-info { 
+    font-size: 0.9rem; 
+    color: var(--texto-cinza); 
+}
+
+.item-info strong { color: var(--texto-claro); }
+
+.item-acoes { display: flex; gap: 8px; }
+
+.btn-item { 
+    background: var(--bg-escuro); 
+    border: 1px solid var(--borda); 
+    border-radius: 8px; 
+    padding: 8px; 
+    font-size: 1.1rem; 
+    cursor: pointer;
+}
+
+.btn-excluir { color: var(--vermelho); }
+.btn-editar { color: var(--azul-ativo); }
+
+/* ==========================================
+   AVISOS E STATUS
+========================================== */
+.aviso-offline { 
+    position: fixed; 
+    bottom: 0; left: 0; 
+    width: 100%; 
+    background: var(--vermelho); 
+    color: white; 
+    text-align: center; 
+    padding: 10px; 
+    font-size: 0.85rem; 
+    font-weight: bold; 
+    z-index: 50;
+}
+
+.aviso-azul { background: var(--azul-ativo); }
+
+.badge-fila { 
+    background: var(--vermelho); 
+    color: white; 
+    padding: 4px 8px; 
+    border-radius: 12px; 
+    font-size: 0.75rem; 
+    font-weight: bold; 
+}
+
+/* Painel Admin (Oculto no visual novo, mas mantido no código) */
+.painel-admin { display: none !important; }
