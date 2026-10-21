@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Fundo arredondado -->
+  <rect width="512" height="512" rx="96" ry="96" fill="#1f4e78"/>
+  
+  <!-- Círculo decorativo -->
+  <circle cx="256" cy="256" r="180" fill="#2f75b5" opacity="0.35"/>
+  
+  <!-- Letra A grande (Auditoria) -->
+  <text x="256" y="330" 
+        font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" 
+        font-size="280" 
+        font-weight="900" 
+        fill="#ffffff" 
+        text-anchor="middle">A</text>
+  
+  <!-- Detalhe: pequena prancheta no canto (sugere auditoria) -->
+  <g transform="translate(360, 360)">
+    <rect x="0" y="0" width="80" height="100" rx="8" fill="#ffffff"/>
+    <rect x="20" y="-10" width="40" height="16" rx="4" fill="#2f75b5"/>
+    <line x1="15" y1="35" x2="65" y2="35" stroke="#2f75b5" stroke-width="5" stroke-linecap="round"/>
+    <line x1="15" y1="55" x2="65" y2="55" stroke="#2f75b5" stroke-width="5" stroke-linecap="round"/>
+    <line x1="15" y1="75" x2="50" y2="75" stroke="#2f75b5" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>

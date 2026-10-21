@@ -1,0 +1,174 @@
+:root {
+    --bg-escuro: #1e1e24;
+    --bg-card: #2a2a32;
+    --azul-escuro: #1f4e78;
+    --azul-botao: #2f3a52;
+    --azul-ativo: #4a6b9a;
+    --texto-claro: #e0e0e0;
+    --texto-cinza: #8a8a93;
+    --branco: #ffffff;
+    --borda: #3a3a42;
+    --vermelho: #d9534f;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-escuro);
+    color: var(--texto-claro);
+    font-size: 15px;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.tela { display: none; height: 100%; flex-direction: column; overflow: hidden; }
+.tela.ativa { display: flex; }
+
+/* HEADER */
+.top-bar {
+    background-color: var(--azul-escuro);
+    color: var(--branco);
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+.header-info span { font-weight: bold; font-size: 1.1rem; display: block; }
+.header-info small { font-size: 0.8rem; opacity: 0.8; }
+
+/* FORMULÁRIOS (Estilo Blocos) */
+.conteudo-aba {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    background-color: var(--bg-escuro);
+}
+.conteudo-aba.ativa { display: block; }
+
+.bloco-form {
+    background-color: var(--bg-card);
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--borda);
+    margin-bottom: 10px;
+}
+
+.bloco-form label {
+    display: block;
+    font-weight: bold;
+    color: var(--texto-claro);
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+
+/* INPUTS E SELECTS */
+.input-escuro {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--branco);
+    font-size: 1.2rem;
+    outline: none;
+}
+
+/* SWITCH (Toggle) */
+.switch { position: relative; display: inline-block; width: 50px; height: 26px; float: right; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--borda); transition: .4s; border-radius: 34px;
+}
+.slider:before {
+    position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
+    background-color: white; transition: .4s; border-radius: 50%;
+}
+input:checked + .slider { background-color: var(--azul-ativo); }
+input:checked + .slider:before { transform: translateX(24px); }
+
+/* CONTADOR (+ / -) PARA FLUXO */
+.fluxo-linha-controle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.fluxo-linha-controle:last-child { margin-bottom: 0; }
+.fluxo-label { font-size: 1rem; color: var(--texto-claro); }
+.fluxo-controles { display: flex; align-items: center; gap: 15px; }
+
+.btn-redondo {
+    width: 44px; height: 44px; border-radius: 50%;
+    background-color: var(--azul-botao); color: var(--branco);
+    border: none; font-size: 1.5rem; font-weight: bold; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+.btn-redondo:active { background-color: var(--azul-ativo); }
+.valor-contador { font-size: 1.3rem; font-weight: bold; color: var(--branco); min-width: 20px; text-align: center; }
+
+/* BOTÕES DE SELEÇÃO (Gênero e Idade) */
+.grid-botoes { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn-selecao {
+    flex: 1; padding: 12px; border-radius: 25px;
+    background-color: var(--azul-botao); color: var(--branco);
+    border: none; font-size: 0.95rem; font-weight: bold;
+    text-align: center; cursor: pointer; transition: 0.2s;
+    min-width: 45%;
+}
+.btn-selecao.selecionado {
+    background-color: var(--azul-ativo);
+    box-shadow: 0 0 8px rgba(74, 107, 154, 0.5);
+    border: 1px solid #6f92c4;
+}
+
+/* BOTÃO SALVAR FIXO */
+.barra-salvar {
+    background-color: var(--borda);
+    padding: 15px;
+    text-align: center;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+}
+.btn-salvar {
+    width: 100%; padding: 16px; border-radius: 8px;
+    background-color: var(--azul-ativo); color: var(--branco);
+    border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* NAVEGAÇÃO ABAS */
+.abas { display: flex; background: var(--azul-escuro); }
+.aba {
+    flex: 1; padding: 15px 0; background: none; border: none;
+    color: var(--texto-cinza); font-weight: bold; font-size: 0.9rem; cursor: pointer;
+    border-bottom: 3px solid transparent;
+}
+.aba.ativa { color: var(--branco); border-bottom-color: var(--azul-ativo); }
+
+/* MANTIDOS DO SISTEMA ANTERIOR */
+.grid-lojas { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; overflow-y: auto; }
+.card-loja { background: var(--bg-card); padding: 20px; text-align: center; border-radius: 8px; color: var(--branco); font-weight: bold; border: 1px solid var(--borda); }
+.card-loja:active { background: var(--azul-ativo); }
+
+.btn-sair, .btn-voltar { background: transparent; border: 1px solid var(--branco); color: var(--branco); padding: 8px 12px; border-radius: 5px; font-size: 0.8rem; }
+
+#tela-login { justify-content: center; align-items: center; }
+.login-container { width: 85%; max-width: 400px; text-align: center; }
+.login-container h1 { color: var(--branco); margin-bottom: 5px; }
+.login-container input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--borda); background: var(--bg-card); color: var(--branco); font-size: 1rem; }
+.btn-primario { width: 100%; padding: 15px; background-color: var(--azul-ativo); color: var(--branco); border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; }
+
+/* Modal */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; }
+.modal.ativa { display: flex; }
+.modal-content { background: var(--bg-card); width: 90%; max-height: 80%; border-radius: 10px; padding: 20px; overflow-y: auto; position: relative; color: var(--texto-claro); }
+.fechar-modal { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; color: var(--vermelho); cursor: pointer; }
+.item-registro { display: flex; justify-content: space-between; border-bottom: 1px solid var(--borda); padding: 10px 0; }

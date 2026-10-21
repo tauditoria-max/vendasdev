@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Modo Aplicativo (esconde a barra de endereço) -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1f4e78">
+    
+    <!-- Manifest (PWA) -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Ícones -->
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon.svg">
+    
+    <title>Auditoria Shopping</title>
+    
+    <!-- CSS com versão para forçar atualização -->
+    <link rel="stylesheet" href="style.css?v=5">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+</head>
+<body>
+
+    <!-- TELA DE LOGIN -->
+    <div id="tela-login" class="tela ativa">
+        <div class="login-container">
+            <h1>Auditoria</h1>
+            <p class="subtitulo">Tacaruna</p>
+            <input type="text" id="login-usuario" placeholder="Usuário" autocapitalize="none" autocomplete="off">
+            <input type="password" id="login-senha" placeholder="Senha">
+            <button onclick="fazerLogin()" class="btn-primario">Entrar</button>
+            <p id="login-erro" class="erro"></p>
+        </div>
+    </div>
+
+    <!-- TELA DE SELEÇÃO DE LOJA -->
+    <div id="tela-lojas" class="tela">
+        <header class="top-bar">
+            <h2>Selecione a Loja</h2>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <span id="indicador-fila" class="badge-fila" style="display:none;">0</span>
+                <button onclick="sincronizarFila()" class="btn-sair" title="Sincronizar agora">🔄</button>
+                <button id="btn-sync-admin" onclick="sincronizarTudoAdmin()" class="btn-sair" title="Sincronização completa (admin)" style="display:none; background:#2f75b5;">🔁 Tudo</button>
+                <button id="btn-exportar" onclick="abrirExportacao('lojas')" class="btn-sair" title="Exportar dados" style="display:none;">📥</button>
+                <button onclick="fazerLogout()" class="btn-sair">Sair</button>
+            </div>
+        </header>
+        
+        <div id="lista-lojas" class="grid-lojas"></div>
+        
+        <div id="painel-admin-sync" class="painel-admin" style="display:none;">
+            <div class="painel-admin-header">🔁 Painel de Sincronização (Admin)</div>
+            <div class="painel-admin-body">
+                <div class="painel-linha">
+                    <span>Itens pendentes neste dispositivo:</span>
+                    <strong id="admin-qtd-fila">0</strong>
+                </div>
+                <div class="painel-linha">
+                    <span>Última sincronização:</span>
+                    <strong id="admin-ultima-sync">—</strong>
+                </div>
+                <div class="painel-linha">
+                    <span>Status:</span>
+                    <strong id="admin-status-sync">Pronto</strong>
+                </div>
+                <button onclick="sincronizarTudoAdmin()" class="btn-primario" style="margin-top:12px;">
+                    🔁 Sincronizar Tudo Agora
+                </button>
+            </div>
+        </div>
+        
+        <div id="status-conexao" class="aviso-offline" style="display:none;">
+            ⚠ Você está offline. Os dados estão sendo salvos localmente e serão enviados quando a conexão voltar.
+        </div>
+        <div id="sessao-offline-aviso" class="aviso-offline" style="display:none; background:#e6f0fa; color:#1f4e78; border-top-color:#2f75b5;">
+            ℹ Sessão offline ativa. Ao voltar a internet, clique em 🔄 e digite sua senha para sincronizar.
+        </div>
+    </div>
+
+    <!-- TELA PRINCIPAL -->
+    <div id="tela-principal" class="tela">
+        <header class="top-bar">
+            <div class="header-info">
+                <span id="nome-loja-header">Loja</span>
+                <small id="nome-auditor-header">Auditor</small>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <button onclick="voltarParaLojas()" class="btn-voltar">Trocar Loja</button>
+            </div>
+        </header>
+
+        <nav class="abas">
+            <button id="aba-vendas" class="aba ativa" onclick="mudarAba('vendas')">Vendas</button>
+            <button id="aba-fluxo" class="aba" onclick="mudarAba('fluxo')">Fluxo</button>
+            <button id="aba-perdas" class="aba" onclick="mudarAba('perdas')">Perdas</button>
+        </nav>
+
+        <!-- ================= ABA VENDAS ================= -->
+        <div id="conteudo-vendas" class="conteudo-aba ativa">
+            
+            <div class="bloco-form">
+                <label>Valor da Venda</label>
+                <input type="number" id="venda-valor" class="input-escuro" placeholder="R$ 0,00" step="0.01">
+            </div>
+
+            <div class="bloco-form">
+                <label>Emitiu Cupom Fiscal?</label>
+                <label class="switch">
+                    <input type="checkbox" id="venda-cupom">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="bloco-form">
+                <label>Quantidade de Itens</label>
+                <div class="fluxo-linha-controle" style="justify-content: center; gap: 30px;">
+                    <button class="btn-redondo" onclick="alterarVendaContador('venda-itens', -1)">−</button>
+                    <span class="valor-contador" id="venda-itens">1</span>
+                    <button class="btn-redondo" onclick="alterarVendaContador('venda-itens', 1)">+</button>
+                </div>
+            </div>
+
+            <div class="bloco-form">
+                <label>Gênero</label>
+                <div class="grid-botoes">
+                    <button type="button" class="btn-selecao" id="btn-gen-m" onclick="selecionarGenero('Masculino')">Masculino</button>
+                    <button type="button" class="btn-selecao" id="btn-gen-f" onclick="selecionarGenero('Feminino')">Feminino</button>
+                </div>
+            </div>
+
+            <div class="bloco-form">
+                <label>Faixa Etária</label>
+                <div class="grid-botoes">
+                    <button type="button" class="btn-selecao" id="btn-idade-1" onclick="selecionarIdade('Até 19 anos')">Até 19 anos</button>
+                    <button type="button" class="btn-selecao" id="btn-idade-2" onclick="selecionarIdade('De 20 a 29 anos')">20 a 29 anos</button>
+                    <button type="button" class="btn-selecao" id="btn-idade-3" onclick="selecionarIdade('De 30 a 44 anos')">30 a 44 anos</button>
+                    <button type="button" class="btn-selecao" id="btn-idade-4" onclick="selecionarIdade('45 ou mais')">45 ou mais</button>
+                </div>
+            </div>
+
+            <div class="bloco-form">
+                <label>Forma de Pagamento</label>
+                <select id="venda-pagamento" class="input-escuro" style="color:var(--branco); padding-bottom:10px;">
+                    <option value="" style="color:black;">Selecione...</option>
+                    <option value="Dinheiro" style="color:black;">Dinheiro</option>
+                    <option value="Cartão de Crédito" style="color:black;">Cartão de Crédito</option>
+                    <option value="Cartão de Débito" style="color:black;">Cartão de Débito</option>
+                    <option value="PIX" style="color:black;">PIX</option>
+                </select>
+            </div>
+
+            <div class="bloco-form">
+                <label>Observação</label>
+                <textarea id="venda-obs" class="input-escuro" rows="2" style="font-size:1rem;"></textarea>
+            </div>
+
+            <div class="bloco-form" style="display:flex; gap:20px;">
+                <label style="margin:0; display:flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="venda-troca"> Troca
+                </label>
+            </div>
+
+            <button onclick="verUltimas('vendas')" class="btn-secundario" style="width:90%; margin: 10px auto; display:block; background:transparent; border:1px solid var(--texto-cinza); color:var(--texto-cinza); padding:10px; border-radius:8px;">Últimas Vendas de Hoje</button>
+
+            <div class="barra-salvar">
+                <button class="btn-salvar" onclick="salvarVenda()">SALVAR VENDA</button>
+            </div>
+        </div>
+
+        <!-- ================= ABA FLUXO ================= -->
+        <div id="conteudo-fluxo" class="conteudo-aba">
+            
+            <div class="bloco-form">
+                <label>Especulador</label>
+                <div class="fluxo-linha-controle">
+                    <span class="fluxo-label">♂ Masculino</span>
+                    <div class="fluxo-controles">
+                        <button class="btn-redondo" onclick="alterarFluxo('esp-m', -1)">−</button>
+                        <span class="valor-contador" id="fluxo-esp-m">0</span>
+                        <button class="btn-redondo" onclick="alterarFluxo('esp-m', 1)">+</button>
+                    </div>
+                </div>
+                <div class="fluxo-linha-controle">
+                    <span class="fluxo-label">♀ Feminino</span>
+                    <div class="fluxo-controles">
+                        <button class="btn-redondo" onclick="alterarFluxo('esp-f', -1)">−</button>
+                        <span class="valor-contador" id="fluxo-esp-f">0</span>
+                        <button class="btn-redondo" onclick="alterarFluxo('esp-f', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bloco-form">
+                <label>Acompanhante</label>
+                <div class="fluxo-linha-controle">
+                    <span class="fluxo-label">♂ Masculino</span>
+                    <div class="fluxo-controles">
+                        <button class="btn-redondo" onclick="alterarFluxo('acomp-m', -1)">−</button>
+                        <span class="valor-contador" id="fluxo-acomp-m">0</span>
+                        <button class="btn-redondo" onclick="alterarFluxo('acomp-m', 1)">+</button>
+                    </div>
+                </div>
+                <div class="fluxo-linha-controle">
+                    <span class="fluxo-label">♀ Feminino</span>
+                    <div class="fluxo-controles">
+                        <button class="btn-redondo" onclick="alterarFluxo('acomp-f', -1)">−</button>
+                        <span class="valor-contador" id="fluxo-acomp-f">0</span>
+                        <button class="btn-redondo" onclick="alterarFluxo('acomp-f', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bloco-form">
+                <label>Outros</label>
+                <div class="fluxo-linha-controle">
+                    <span class="fluxo-label">♂ Masculino</span>
+                    <div class="fluxo-controles">
+                        <button class="btn-redondo" onclick="alterarFluxo('out-m', -1)">−</button>
+                        <span class="valor-contador" id="fluxo-out-m">0</span>
+                        <button class="btn-redondo" onclick="alterarFluxo('out-m', 1)">+</button>
+                    </div>
+                </div>
+                <div class="fluxo-linha-controle">
+                    <span class="fluxo-label">♀ Feminino</span>
+                    <div class="fluxo-controles">
+                        <button class="btn-redondo" onclick="alterarFluxo('out-f', -1)">−</button>
+                        <span class="valor-contador" id="fluxo-out-f">0</span>
+                        <button class="btn-redondo" onclick="alterarFluxo('out-f', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fluxo-status" id="fluxo-status" style="color:var(--texto-cinza); text-align:center; margin-top:20px; padding:10px;">Todos os toques são salvos automaticamente ✓</div>
+
+            <button onclick="verUltimas('fluxo')" class="btn-secundario" style="width:90%; margin: 10px auto 30px auto; display:block; background:transparent; border:1px solid var(--texto-cinza); color:var(--texto-cinza); padding:10px; border-radius:8px;">Últimos Registros</button>
+        </div>
+
+        <!-- ================= ABA PERDAS ================= -->
+        <div id="conteudo-perdas" class="conteudo-aba">
+            <div class="bloco-form">
+                <label>Motivo da Perda</label>
+                <select id="perda-motivo" class="input-escuro" style="color:var(--branco); padding-bottom:10px;">
+                    <option value="" style="color:black;">Selecione...</option>
+                    <option value="Preço" style="color:black;">Apenas Olhando</option>
+                    <option value="Preço" style="color:black;">Preço</option>
+                    <option value="Falta de Produto" style="color:black;">Falta de Cor</option>
+                    <option value="Falta de Produto" style="color:black;">Falta de Produto</option>
+                    <option value="Falta de Produto" style="color:black;">Falta de Tamanho</option>
+                    <option value="Atendimento" style="color:black;">Atendimento</option>
+                    <option value="Atendimento" style="color:black;">Apenas observand a vitrine</option>
+                    <option value="Outros" style="color:black;">Outros</option>
+                </select>
+            </div>
+            <div class="bloco-form">
+                <label>Observação</label>
+                <textarea id="perda-obs" class="input-escuro" rows="4" style="font-size:1rem;"></textarea>
+            </div>
+            
+            <button onclick="verUltimas('perdas')" class="btn-secundario" style="width:90%; margin: 20px auto 10px auto; display:block; background:transparent; border:1px solid var(--texto-cinza); color:var(--texto-cinza); padding:10px; border-radius:8px;">Últimos Registros</button>
+
+            <div class="barra-salvar">
+                <button class="btn-salvar" onclick="salvarPerda()">SALVAR PERDA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA DE EXPORTAÇÃO -->
+    <div id="tela-exportar" class="tela">
+        <header class="top-bar">
+            <h2>Exportar Dados</h2>
+            <button onclick="fecharExportacao()" class="btn-voltar">Voltar</button>
+        </header>
+
+        <div style="padding: 20px; overflow-y: auto; flex: 1;">
+            <div class="form-group">
+                <label>Loja:</label>
+                <select id="export-loja">
+                    <option value="">Todas as lojas</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Auditor:</label>
+                <select id="export-auditor">
+                    <option value="">Todos os auditores</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Data Inicial:</label>
+                <input type="date" id="export-data-inicio">
+            </div>
+
+            <div class="form-group">
+                <label>Data Final:</label>
+                <input type="date" id="export-data-fim">
+            </div>
+
+            <div class="checkbox-group" style="margin-top: 10px; display:flex; gap:15px; flex-wrap:wrap;">
+                <label style="display:flex; align-items:center; gap:5px;"><input type="checkbox" id="export-incluir-vendas" checked> Vendas</label>
+                <label style="display:flex; align-items:center; gap:5px;"><input type="checkbox" id="export-incluir-fluxo" checked> Fluxo</label>
+                <label style="display:flex; align-items:center; gap:5px;"><input type="checkbox" id="export-incluir-perdas" checked> Perdas</label>
+            </div>
+
+            <button onclick="exportarDados()" class="btn-primario mt-20" style="margin-top: 25px;">
+                📥 Gerar Arquivo CSV
+            </button>
+
+            <div id="export-status" class="fluxo-status" style="margin-top: 15px;">
+                Selecione o período e clique em Gerar.
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ÚLTIMOS -->
+    <div id="modal-ultimos" class="modal">
+        <div class="modal-content">
+            <span class="fechar-modal" onclick="fecharModal()">&times;</span>
+            <h3>Últimos Registros</h3>
+            <div id="lista-ultimos"></div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="firebase-config.js?v=3"></script>
+    <script src="script.js?v=3"></script>
+
+    <!-- Registro do Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(registration => {
+              console.log('Service Worker registrado:', registration.scope);
+            })
+            .catch(error => {
+              console.log('Falha ao registrar o Service Worker:', error);
+            });
+        });
+      }
+    </script>
+</body>
+</html>
