@@ -549,7 +549,7 @@ async function salvarVenda() {
         return;
     }
 
-    // 1. Salva a Venda
+    // Salva a Venda normalmente
     const dadosVenda = {
         tipo: 'venda',
         loja: lojaSelecionada,
@@ -565,38 +565,9 @@ async function salvarVenda() {
         virada: virada
     };
 
+    // Se o usuário estiver na aba de vendas, não tenta alterar a aba de fluxo (que está oculta)
     const resultado = await salvarComFila(dadosVenda);
     
-    // 2. Contabiliza a venda no Fluxo do dia
-    // Busca os valores atuais do fluxo na tela
-    let espM = parseInt(document.getElementById('fluxo-esp-m').textContent) || 0;
-    let espF = parseInt(document.getElementById('fluxo-esp-f').textContent) || 0;
-
-    if (vendaGeneroSelecionado === 'Masculino') {
-        espM += 1; // Adiciona 1 ao fluxo masculino
-        document.getElementById('fluxo-esp-m').textContent = espM;
-    } else if (vendaGeneroSelecionado === 'Feminino') {
-        espF += 1; // Adiciona 1 ao fluxo feminino
-        document.getElementById('fluxo-esp-f').textContent = espF;
-    }
-
-    // Salva o fluxo atualizado no Firebase (ou na fila)
-    const dadosFluxo = {
-        tipo: 'fluxo',
-        loja: lojaSelecionada,
-        auditor: usuarioLogado,
-        data: getDataHoje(),
-        especulador_m: espM,
-        especulador_f: espF,
-        acompanhante_m: parseInt(document.getElementById('fluxo-acomp-m').textContent) || 0,
-        acompanhante_f: parseInt(document.getElementById('fluxo-acomp-f').textContent) || 0,
-        outros_m: parseInt(document.getElementById('fluxo-out-m').textContent) || 0,
-        outros_f: parseInt(document.getElementById('fluxo-out-f').textContent) || 0
-    };
-    const idDocFluxo = 'fluxo_' + lojaSelecionada.replace(/\s+/g, '-') + '_' + usuarioLogado + '_' + getDataHoje();
-    await salvarComFila(dadosFluxo, idDocFluxo);
-
-    // 3. Feedback para o usuário
     if (resultado.offline) alert("Venda registrada com sucesso (Offline).");
     else alert("Venda gravada com sucesso!");
 
