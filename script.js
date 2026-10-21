@@ -594,21 +594,43 @@ async function salvarVenda() {
 }
 
 function limparFormularioVenda() {
-    document.getElementById('venda-valor').value = "";
-    document.getElementById('venda-pagamento').value = "";
-    document.getElementById('venda-obs').value = "";
-    document.getElementById('venda-cupom').checked = false;
-    document.getElementById('venda-troca').checked = false;
-    document.getElementById('venda-virada').checked = false;
+    const limparInput = (id, isCheckbox = false) => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (isCheckbox) el.checked = false;
+            else el.value = "";
+        }
+    };
+
+    const setText = (id, texto) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = texto;
+    };
+
+    const removeClass = (id, classe) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove(classe);
+    };
+
+    // Limpa os campos
+    limparInput('venda-valor');
+    limparInput('venda-pagamento');
+    limparInput('venda-obs');
+    limparInput('venda-cupom', true);
+    limparInput('venda-troca', true);
+    limparInput('venda-virada', true);
     
+    // Reseta as variáveis globais
     vendaGeneroSelecionado = null;
     vendaIdadeSelecionada = null;
     vendaItensCount = 1;
     
-    document.getElementById('venda-itens').textContent = "1";
-    for (let i = 1; i <= 4; i++) document.getElementById('btn-idade-' + i).classList.remove('selecionado');
-    document.getElementById('btn-gen-m').classList.remove('selecionado');
-    document.getElementById('btn-gen-f').classList.remove('selecionado');
+    // Reseta o visual
+    setText('venda-itens', "1");
+    
+    for (let i = 1; i <= 4; i++) removeClass('btn-idade-' + i, 'selecionado');
+    removeClass('btn-gen-m', 'selecionado');
+    removeClass('btn-gen-f', 'selecionado');
 }
 
 // ============================================================
