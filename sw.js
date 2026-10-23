@@ -1,5 +1,5 @@
 // Nome e versão do cache (mude a versão se quiser forçar uma atualização)
-const CACHE_NAME = 'auditoria-tacaruna-v12';
+const CACHE_NAME = 'auditoria-tacaruna-v13';
 
 // Lista de arquivos que serão guardados para funcionar offline
 const ASSETS_TO_CACHE = [

@@ -3,7 +3,7 @@
 // ============================================================
 
 const DOMINIO_FICTICIO = "@tacaruna.com.br";
-const USUARIO_ADMIN = "diegofilipe";
+const USUARIOS_ADMIN = ["diegofilipe", "wesleysantana"];
 const LOJAS = ["Aby's", "Hering Kids", "Nel Blu", "Ecológica", "Grandão do Queijo", "Mundo Verde"];
 
 let usuarioLogado = null;
@@ -136,7 +136,9 @@ function atualizarStatusConexao() {
 
 // --- NAVEGAÇÃO E LOGIN ---
 function mostrarTela(idTela) { document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); document.getElementById(idTela).classList.add('ativa'); }
-function ehAdmin() { return usuarioLogado && usuarioLogado.toLowerCase() === USUARIO_ADMIN.toLowerCase(); }
+function ehAdmin() { 
+    return usuarioLogado && USUARIOS_ADMIN.some(u => u.toLowerCase() === usuarioLogado.toLowerCase()); 
+}
 
 async function registrarLogin(usuario) {
     if (!estaOnline() || !auth.currentUser) return;
@@ -216,7 +218,10 @@ async function carregarResumoLoja(loja) {
     const painel = document.getElementById('resumo-lojas');
     if (!painel) return;
     try {
-        const snapshot = await db.collection('registros').where('loja', '==', loja).get();
+        const snapshot = await db.collection('registros')
+    .where('loja', '==', loja)
+    .where('auditor', '==', usuarioLogado)
+    .get();
         let vd = 0, p = 0, em = 0, ef = 0, am = 0, af = 0, om = 0, of = 0;
         const hoje = new Date();
         snapshot.forEach(doc => {
@@ -404,7 +409,9 @@ async function exportarDados() {
     st.textContent = "Buscando dados e gerando relatório...";
     
     try {
-        const snaps = await db.collection('registros').get(); 
+        const snaps = await db.collection('registros')
+    .where('auditor', '==', usuarioLogado)
+    .get(); 
         let regs = [];
         snaps.forEach(doc => { 
             const d = doc.data(); 
@@ -684,7 +691,7 @@ function gerarExcel(regs, logins) {
     if (logins) {
         xml += `<Worksheet ss:Name="Logins"><Table>`;
         xml += `<Row><Cell ss:StyleID="Header"><Data ss:Type="String">Data</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Hora</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Usuário</Data></Cell></Row>`;
-        logins.filter(l => l.usuario && l.usuario.toLowerCase() !== USUARIO_ADMIN.toLowerCase()).forEach(l => {
+        logins.filter(l => l.usuario && !USUARIOS_ADMIN.some(a => a.toLowerCase() === l.usuario.toLowerCase())).forEach(l => {
             const d = l.dataHora ? l.dataHora.toDate() : new Date();
             xml += `<Row>
                 <Cell><Data ss:Type="String">${d.toLocaleDateString('pt-BR')}</Data></Cell>
